@@ -1,0 +1,10 @@
+spring:
+  data:
+    cassandra:
+      keyspace-name: timeline
+      contact-points: 127.0.0.1
+      port: 9142
+      local-datacenter: datacenter1
+  kafka:
+    bootstrap-servers: localhost:9092
+
