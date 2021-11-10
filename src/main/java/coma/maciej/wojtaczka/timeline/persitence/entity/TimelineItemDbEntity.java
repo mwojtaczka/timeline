@@ -30,4 +30,12 @@ public class TimelineItemDbEntity {
 								   .creationTime(timelineItem.getCreationTime())
 								   .build();
 	}
+
+	public TimelineItem toModel() {
+		return TimelineItem.builder()
+						   .ownerId(ownerId)
+						   .announcementAuthorId(announcementAuthorId)
+						   .creationTime(creationTime)
+						   .build();
+	}
 }

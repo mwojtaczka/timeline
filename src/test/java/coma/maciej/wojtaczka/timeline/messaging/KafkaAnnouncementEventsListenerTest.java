@@ -92,12 +92,12 @@ class KafkaAnnouncementEventsListenerTest {
 
 		$.userWithId(announcerId1)
 		 .isFollowedByUserWithId(followerId1)
-		 .andAlsoByUserWithId(followerId2)
-		 .andAlsoByUserWithId(followerId3);
+		 .andAlsoFollowedByUserWithId(followerId2)
+		 .andAlsoFollowedByUserWithId(followerId3);
 
 		$.userWithId(announcerId2)
 		 .isFollowedByUserWithId(followerId1)
-		 .andAlsoByUserWithId(followerId2);
+		 .andAlsoFollowedByUserWithId(followerId2);
 
 		//when
 		ListenableFuture<SendResult<String, String>> sent1 =

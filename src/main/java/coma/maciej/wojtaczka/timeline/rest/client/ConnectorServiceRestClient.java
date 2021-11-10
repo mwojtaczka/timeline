@@ -7,7 +7,6 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -33,9 +32,7 @@ public class ConnectorServiceRestClient implements ConnectorService {
 
 		UserConnection[] userConnections = restTemplate.getForObject(
 				url,
-				UserConnection[].class,
-				Map.of("userId", authorId.toString())
-		);
+				UserConnection[].class);
 
 		if (userConnections == null) {
 			return List.of();

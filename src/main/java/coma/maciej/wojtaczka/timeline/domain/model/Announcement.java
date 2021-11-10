@@ -20,7 +20,7 @@ public class Announcement extends DomainModel {
 	private final UUID authorId;
 	private final String content;
 	private final Instant creationTime;
-
+//TODO: add comments
 
 	public List<TimelineItem> fanout(List<UUID> targets) {
 
