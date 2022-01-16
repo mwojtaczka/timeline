@@ -5,6 +5,7 @@ import coma.maciej.wojtaczka.timeline.domain.model.Announcement;
 import coma.maciej.wojtaczka.timeline.domain.model.TimelineItem;
 import lombok.Builder;
 import lombok.Value;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
@@ -18,11 +19,11 @@ import static java.util.stream.Collectors.toList;
 @Component
 public class AnnouncementServiceRestClient implements AnnouncementService {
 
-	public final static String FETCH_ANNOUNCEMENTS = "/v1/announcements";
+	public final static String FETCH_ANNOUNCEMENTS = "/v1/announcements/fetch";
 
 	private final RestTemplate restTemplate;
 
-	public AnnouncementServiceRestClient(RestTemplate restTemplate) {
+	public AnnouncementServiceRestClient(@Qualifier("AnnBrd") RestTemplate restTemplate) {
 		this.restTemplate = restTemplate;
 	}
 

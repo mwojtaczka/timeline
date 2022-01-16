@@ -16,7 +16,7 @@ import java.util.UUID;
 @RestController
 public class TimelineRestController {
 
-	final static String TIMELINES_URL = "/timelines";
+	final static String TIMELINES_URL = "/v1/timelines";
 	private final TimelineService timelineService;
 
 	public TimelineRestController(TimelineService timelineService) {

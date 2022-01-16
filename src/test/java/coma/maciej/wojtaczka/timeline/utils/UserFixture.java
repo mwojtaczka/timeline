@@ -26,6 +26,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.post;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static coma.maciej.wojtaczka.timeline.rest.client.AnnouncementServiceRestClient.FETCH_ANNOUNCEMENTS;
 import static coma.maciej.wojtaczka.timeline.rest.client.ConnectorServiceRestClient.GET_CONNECTIONS_BY_USER;
+import static coma.maciej.wojtaczka.timeline.rest.client.ConnectorServiceRestClient.USERS_ID_PARAM;
 import static java.util.Comparator.comparing;
 
 @Component
@@ -72,7 +73,7 @@ public class UserFixture {
 														 .withBody(jsonResponseBody);
 
 			mockServer.stubFor(get(urlPathEqualTo(GET_CONNECTIONS_BY_USER))
-									   .withQueryParam("userId", equalTo(userId.toString()))
+									   .withQueryParam(USERS_ID_PARAM, equalTo(userId.toString()))
 									   .willReturn(response));
 			return this;
 		}

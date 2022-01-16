@@ -2,6 +2,7 @@ package coma.maciej.wojtaczka.timeline.rest.client;
 
 import coma.maciej.wojtaczka.timeline.domain.ConnectorService;
 import coma.maciej.wojtaczka.timeline.domain.model.UserConnection;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -16,10 +17,11 @@ import static java.util.stream.Collectors.toList;
 public class ConnectorServiceRestClient implements ConnectorService {
 
 	public final static String GET_CONNECTIONS_BY_USER = "/v1/connections";
+	public static final String USERS_ID_PARAM = "usersId";
 
 	private final RestTemplate restTemplate;
 
-	public ConnectorServiceRestClient(RestTemplate restTemplate) {
+	public ConnectorServiceRestClient(@Qualifier("UsrConn") RestTemplate restTemplate) {
 		this.restTemplate = restTemplate;
 	}
 
@@ -27,7 +29,7 @@ public class ConnectorServiceRestClient implements ConnectorService {
 	public List<UUID> fetchFollowers(UUID authorId) {
 
 		String url = UriComponentsBuilder.fromUriString(GET_CONNECTIONS_BY_USER)
-										 .queryParam("userId", authorId.toString())
+										 .queryParam(USERS_ID_PARAM, authorId.toString())
 										 .encode().build().toUriString();
 
 		UserConnection[] userConnections = restTemplate.getForObject(

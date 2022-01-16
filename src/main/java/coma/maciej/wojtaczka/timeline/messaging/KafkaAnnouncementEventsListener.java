@@ -4,16 +4,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import coma.maciej.wojtaczka.timeline.domain.TimelineService;
 import coma.maciej.wojtaczka.timeline.domain.model.Announcement;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
+@Slf4j
 @Component
 class KafkaAnnouncementEventsListener {
-
-	private final Logger LOG = LoggerFactory.getLogger(KafkaAnnouncementEventsListener.class);
 
 	public final static String ANNOUNCEMENT_PUBLISHED = "announcement-published";
 	private final String GROUP_ID = "timeline";
@@ -28,14 +26,15 @@ class KafkaAnnouncementEventsListener {
 
 	@KafkaListener(topics = ANNOUNCEMENT_PUBLISHED, groupId = GROUP_ID)
 	void listenToUserCreated(ConsumerRecord<String, String> consumerRecord) {
-
+		log.debug("{} event received: {}", ANNOUNCEMENT_PUBLISHED, consumerRecord.value());
 		String announcementJson = consumerRecord.value();
 
 		try {
 			Announcement announcement = objectMapper.readValue(announcementJson, Announcement.class);
 			timelineService.fanoutAnnouncement(announcement);
+			log.info("Announcement from user: {}, time: {} has been fanout", announcement.getAuthorId(), announcement.getCreationTime());
 		} catch (JsonProcessingException e) {
-			LOG.error("Could not parse json", e);
+			log.error("Could not parse json", e);
 		}
 	}
 }
