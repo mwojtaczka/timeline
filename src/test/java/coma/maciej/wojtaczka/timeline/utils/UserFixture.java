@@ -82,8 +82,8 @@ public class UserFixture {
 			return isFollowedByUserWithId(connectedUserId);
 		}
 
-		public FollowedUserContextHolder followsUserWithId(UUID id) {
-			return new FollowedUserContextHolder(id, this);
+		public FollowedUserContextHolder followsUserWithId(UUID followeeId) {
+			return new FollowedUserContextHolder(followeeId, this);
 		}
 
 		@SneakyThrows
@@ -169,25 +169,24 @@ public class UserFixture {
 		}
 
 		public AnnouncementBuilder whoPublishedAnnouncement() {
-			return new AnnouncementBuilder(this, announcerId, userWhoFollows);
+			return new AnnouncementBuilder(this, userWhoFollows);
 		}
 
 	}
 
-	public class AnnouncementBuilder {
+	public static class AnnouncementBuilder {
 
 		private final Announcement.AnnouncementBuilder builder;
-		private final FollowedUserContextHolder owner;
-		private final UserBuilder userWhoFollowsTheOwner;
-//		private final List<CommentBuilder> comments = new ArrayList<>();
+		private final FollowedUserContextHolder announcer;
+		private final UserBuilder userWhoFollowsTheAnnouncer;
 
-		public AnnouncementBuilder(FollowedUserContextHolder owner, UUID authorId, UserBuilder userWhoFollows) {
-			this.owner = owner;
-			this.userWhoFollowsTheOwner = userWhoFollows;
+		public AnnouncementBuilder(FollowedUserContextHolder announcer, UserBuilder userWhoFollows) {
+			this.announcer = announcer;
+			this.userWhoFollowsTheAnnouncer = userWhoFollows;
 			this.builder = Announcement.builder()
-									   .authorId(authorId)
+									   .authorId(announcer.announcerId)
 									   .content("Default content")
-//									   .comments(new ArrayList<>())
+									   .commentsCount(0)
 									   .creationTime(Instant.now());
 		}
 
@@ -201,26 +200,30 @@ public class UserFixture {
 			return this;
 		}
 
+		public AnnouncementBuilder thatHasBeenCommentedTimes(long times) {
+			builder.commentsCount(times);
+			return this;
+		}
+
 		public AnnouncementBuilder andAlsoAnnouncement() {
-			Announcement announcement = build();
-			return new AnnouncementBuilder(owner, announcement.getAuthorId(), userWhoFollowsTheOwner);
+			build();
+			return new AnnouncementBuilder(announcer, userWhoFollowsTheAnnouncer);
 		}
 
 		public UserBuilder andTheGivenUser() {
 			build();
-			return userWhoFollowsTheOwner;
+			return userWhoFollowsTheAnnouncer;
 		}
 
-		private Announcement build() {
+		private void build() {
 			Announcement announcement = builder.build();
-			owner.userAnnouncements.add(announcement);
+			announcer.userAnnouncements.add(announcement);
 			TimelineItem timelineItem = TimelineItem.builder()
-													.ownerId(userWhoFollowsTheOwner.userId)
+													.ownerId(userWhoFollowsTheAnnouncer.userId)
 													.announcementAuthorId(announcement.getAuthorId())
 													.creationTime(announcement.getCreationTime())
 													.build();
-			userWhoFollowsTheOwner.timelineItems.add(timelineItem);
-			return announcement;
+			userWhoFollowsTheAnnouncer.timelineItems.add(timelineItem);
 		}
 	}
 }

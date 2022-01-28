@@ -5,7 +5,6 @@ import coma.maciej.wojtaczka.timeline.utils.UserFixture;
 import org.cassandraunit.CQLDataLoader;
 import org.cassandraunit.dataset.cql.ClassPathCQLDataSet;
 import org.cassandraunit.utils.EmbeddedCassandraServerHelper;
-import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +20,7 @@ import java.util.UUID;
 
 import static coma.maciej.wojtaczka.timeline.rest.controller.TimelineRestController.TIMELINES_URL;
 import static java.time.Instant.parse;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -56,11 +56,13 @@ class TimelineRestControllerTest {
 		$.userWithId(followerId)
 		 .followsUserWithId(followeeId1)
 		 .whoPublishedAnnouncement().atTime(parse("2007-12-03T10:15:30.00Z")).withContent("Hello 1 from user 1")
+		 .thatHasBeenCommentedTimes(7)
 		 .andAlsoAnnouncement().atTime(parse("2007-12-04T10:15:30.00Z")).withContent("Hello 2 from user 1")
 		 .andTheGivenUser()
 		 .followsUserWithId(followeeId2)
 		 .whoPublishedAnnouncement().atTime(parse("2007-12-03T11:15:30.00Z")).withContent("Hello 1 from user 2")
 		 .andAlsoAnnouncement().atTime(parse("2007-12-04T11:15:30.00Z")).withContent("Hello 2 from user 2")
+		 .thatHasBeenCommentedTimes(3)
 		 .andTheGivenUser().isDone();
 
 		//when
@@ -71,11 +73,12 @@ class TimelineRestControllerTest {
 		//then
 		result.andExpect(status().isOk())
 			  .andExpect(jsonPath("$", hasSize(4)))
-			  .andExpect(jsonPath("$[0].content", Matchers.equalTo("Hello 2 from user 2")))
-			  .andExpect(jsonPath("$[1].content", Matchers.equalTo("Hello 2 from user 1")))
-			  .andExpect(jsonPath("$[2].content", Matchers.equalTo("Hello 1 from user 2")))
-			  .andExpect(jsonPath("$[3].content", Matchers.equalTo("Hello 1 from user 1")));
-
+			  .andExpect(jsonPath("$[0].content", equalTo("Hello 2 from user 2")))
+			  .andExpect(jsonPath("$[0].commentsCount", equalTo(3)))
+			  .andExpect(jsonPath("$[1].content", equalTo("Hello 2 from user 1")))
+			  .andExpect(jsonPath("$[2].content", equalTo("Hello 1 from user 2")))
+			  .andExpect(jsonPath("$[3].content", equalTo("Hello 1 from user 1")))
+			  .andExpect(jsonPath("$[3].commentsCount", equalTo(7)));
 	}
 
 	@Test
@@ -88,6 +91,7 @@ class TimelineRestControllerTest {
 		$.userWithId(followerId)
 		 .followsUserWithId(followeeId1)
 		 .whoPublishedAnnouncement().atTime(parse("2007-12-03T10:15:30.00Z")).withContent("Hello 1 from user 1")
+		 .thatHasBeenCommentedTimes(5)
 		 .andAlsoAnnouncement().atTime(parse("2007-12-04T10:15:30.00Z")).withContent("Hello 2 from user 1")
 		 .andTheGivenUser()
 		 .followsUserWithId(followeeId2)
@@ -105,8 +109,9 @@ class TimelineRestControllerTest {
 		//then
 		result.andExpect(status().isOk())
 			  .andExpect(jsonPath("$", hasSize(2)))
-			  .andExpect(jsonPath("$[0].content", Matchers.equalTo("Hello 1 from user 2")))
-			  .andExpect(jsonPath("$[1].content", Matchers.equalTo("Hello 1 from user 1")));
+			  .andExpect(jsonPath("$[0].content", equalTo("Hello 1 from user 2")))
+			  .andExpect(jsonPath("$[1].content", equalTo("Hello 1 from user 1")))
+			  .andExpect(jsonPath("$[1].commentsCount", equalTo(5)));
 
 	}
 
