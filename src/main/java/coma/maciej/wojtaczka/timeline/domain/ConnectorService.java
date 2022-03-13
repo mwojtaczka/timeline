@@ -5,5 +5,5 @@ import java.util.UUID;
 
 public interface ConnectorService {
 
-    List<UUID> fetchFollowers(UUID authorId);
+	List<UUID> fetchFollowers(UUID authorId);
 }

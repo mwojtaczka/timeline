@@ -10,7 +10,7 @@ import java.util.UUID;
 @Value
 public class TimelineItem {
 
-    UUID ownerId;
-    UUID announcementAuthorId;
-    Instant creationTime;
+	UUID ownerId;
+	UUID announcementAuthorId;
+	Instant creationTime;
 }
