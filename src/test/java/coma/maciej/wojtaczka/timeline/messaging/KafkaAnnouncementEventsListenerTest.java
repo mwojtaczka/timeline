@@ -3,8 +3,10 @@ package coma.maciej.wojtaczka.timeline.messaging;
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.querybuilder.select.Select;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import coma.maciej.wojtaczka.timeline.domain.model.TimelineItem;
+import coma.maciej.wojtaczka.timeline.domain.DomainEvent;
+import coma.maciej.wojtaczka.timeline.domain.model.Announcement;
 import coma.maciej.wojtaczka.timeline.persitence.entity.TimelineItemDbEntity;
 import coma.maciej.wojtaczka.timeline.utils.KafkaTestListener;
 import coma.maciej.wojtaczka.timeline.utils.UserFixture;
@@ -146,13 +148,17 @@ class KafkaAnnouncementEventsListenerTest {
 		String capturedEvent1 = kafkaTestListener.receiveContentFromTopic(TIMELINES_UPDATED)
 												 .orElseThrow(() -> new RuntimeException("No events"));
 
-		TimelineItem[] timelineItems1 = objectMapper.readValue(capturedEvent1, TimelineItem[].class);
-		assertThat(timelineItems1).hasSize(3);
+		DomainEvent.Envelope<Announcement> event1 = objectMapper.readValue(capturedEvent1, new TypeReference<>() {
+		});
+		assertThat(event1.getRecipients()).containsExactlyInAnyOrder(followerId1, followerId2, followerId3);
+		assertThat(event1.getPayload().getAuthorId()).isEqualTo(announcerId1);
 
 		String capturedEvent2 = kafkaTestListener.receiveContentFromTopic(TIMELINES_UPDATED)
 												 .orElseThrow(() -> new RuntimeException("No events"));
-		TimelineItem[] timelineItems2 = objectMapper.readValue(capturedEvent2, TimelineItem[].class);
-		assertThat(timelineItems2).hasSize(2);
+		DomainEvent.Envelope<Announcement> event2 = objectMapper.readValue(capturedEvent2, new TypeReference<>() {
+		});
+		assertThat(event2.getRecipients()).containsExactlyInAnyOrder(followerId1, followerId2);
+		assertThat(event2.getPayload().getAuthorId()).isEqualTo(announcerId2);
 	}
 
 	private void waitUntilRecordsFound(int recordsCount, Set<UUID> followers) throws InterruptedException {

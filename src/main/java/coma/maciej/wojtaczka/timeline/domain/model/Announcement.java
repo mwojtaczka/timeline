@@ -32,7 +32,7 @@ public class Announcement extends DomainModel {
 																			   .build())
 												  .collect(Collectors.toList());
 
-		DomainEvent<List<TimelineItem>> timelinesUpdatedEvent = DomainEvents.timelinesUpdated(timelineItems);
+		DomainEvent<Announcement> timelinesUpdatedEvent = DomainEvents.timelinesUpdated(targets, this);
 		addEventToPublish(timelinesUpdatedEvent);
 
 		return timelineItems;
@@ -41,8 +41,8 @@ public class Announcement extends DomainModel {
 	public static class DomainEvents {
 		public static final String TIMELINES_UPDATED = "timelines-updated";
 
-		static DomainEvent<List<TimelineItem>> timelinesUpdated(List<TimelineItem> newTimelineItems) {
-			return new DomainEvent<>(TIMELINES_UPDATED, newTimelineItems);
+		static DomainEvent<Announcement> timelinesUpdated(List<UUID> recipients, Announcement timelineData) {
+			return new DomainEvent<>(TIMELINES_UPDATED, recipients, timelineData);
 		}
 	}
 }

@@ -56,13 +56,14 @@ class AnnouncementTest {
 												.build();
 
 		//when
-		List<TimelineItem> newTimelineItems = announcement.fanout(targets);
+		announcement.fanout(targets);
 
 		//then
 		List<DomainEvent<?>> domainEvents = announcement.getDomainEvents();
 		assertThat(domainEvents).hasSize(1);
 		assertThat(domainEvents.get(0).getDestination()).isEqualTo("timelines-updated");
-		assertThat(domainEvents.get(0).getPayload()).isEqualTo(newTimelineItems);
+		assertThat(domainEvents.get(0).getRecipients()).containsExactlyInAnyOrderElementsOf(targets);
+		assertThat(domainEvents.get(0).getPayload()).isEqualTo(announcement);
 	}
 
 }
