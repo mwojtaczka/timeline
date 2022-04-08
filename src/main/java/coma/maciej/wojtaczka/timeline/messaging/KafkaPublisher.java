@@ -23,7 +23,7 @@ class KafkaPublisher implements DomainEventPublisher {
 	@Override
 	public void publish(DomainEvent<?> domainEvent) {
 		try {
-			String jsonPayload = objectMapper.writeValueAsString(domainEvent.getEnvelope());
+			String jsonPayload = objectMapper.writeValueAsString(domainEvent.getPayload());
 			kafkaTemplate.send(domainEvent.getDestination(), jsonPayload);
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException("Exception during json marshaling", e);

@@ -1,6 +1,7 @@
 package coma.maciej.wojtaczka.timeline.domain.model;
 
 import coma.maciej.wojtaczka.timeline.domain.DomainEvent;
+import coma.maciej.wojtaczka.timeline.domain.dto.Envelope;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -62,8 +63,7 @@ class AnnouncementTest {
 		List<DomainEvent<?>> domainEvents = announcement.getDomainEvents();
 		assertThat(domainEvents).hasSize(1);
 		assertThat(domainEvents.get(0).getDestination()).isEqualTo("timelines-updated");
-		assertThat(domainEvents.get(0).getRecipients()).containsExactlyInAnyOrderElementsOf(targets);
-		assertThat(domainEvents.get(0).getPayload()).isEqualTo(announcement);
+		assertThat(domainEvents.get(0).getPayload()).isEqualTo(new Envelope<>(targets, announcement));
 	}
 
 }

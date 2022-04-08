@@ -1,6 +1,7 @@
 package coma.maciej.wojtaczka.timeline.domain.model;
 
 import coma.maciej.wojtaczka.timeline.domain.DomainEvent;
+import coma.maciej.wojtaczka.timeline.domain.dto.Envelope;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -32,7 +33,7 @@ public class Announcement extends DomainModel {
 																			   .build())
 												  .collect(Collectors.toList());
 
-		DomainEvent<Announcement> timelinesUpdatedEvent = DomainEvents.timelinesUpdated(targets, this);
+		DomainEvent<Envelope<Announcement>> timelinesUpdatedEvent = DomainEvents.timelinesUpdated(targets, this);
 		addEventToPublish(timelinesUpdatedEvent);
 
 		return timelineItems;
@@ -41,8 +42,8 @@ public class Announcement extends DomainModel {
 	public static class DomainEvents {
 		public static final String TIMELINES_UPDATED = "timelines-updated";
 
-		static DomainEvent<Announcement> timelinesUpdated(List<UUID> recipients, Announcement timelineData) {
-			return new DomainEvent<>(TIMELINES_UPDATED, recipients, timelineData);
+		static DomainEvent<Envelope<Announcement>> timelinesUpdated(List<UUID> recipients, Announcement timelineData) {
+			return new DomainEvent<>(TIMELINES_UPDATED, new Envelope<>(recipients, timelineData));
 		}
 	}
 }

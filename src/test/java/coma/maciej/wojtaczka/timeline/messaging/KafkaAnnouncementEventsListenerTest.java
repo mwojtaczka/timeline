@@ -5,7 +5,7 @@ import com.datastax.oss.driver.api.querybuilder.select.Select;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import coma.maciej.wojtaczka.timeline.domain.DomainEvent;
+import coma.maciej.wojtaczka.timeline.domain.dto.Envelope;
 import coma.maciej.wojtaczka.timeline.domain.model.Announcement;
 import coma.maciej.wojtaczka.timeline.persitence.entity.TimelineItemDbEntity;
 import coma.maciej.wojtaczka.timeline.utils.KafkaTestListener;
@@ -148,14 +148,14 @@ class KafkaAnnouncementEventsListenerTest {
 		String capturedEvent1 = kafkaTestListener.receiveContentFromTopic(TIMELINES_UPDATED)
 												 .orElseThrow(() -> new RuntimeException("No events"));
 
-		DomainEvent.Envelope<Announcement> event1 = objectMapper.readValue(capturedEvent1, new TypeReference<>() {
+		Envelope<Announcement> event1 = objectMapper.readValue(capturedEvent1, new TypeReference<>() {
 		});
 		assertThat(event1.getRecipients()).containsExactlyInAnyOrder(followerId1, followerId2, followerId3);
 		assertThat(event1.getPayload().getAuthorId()).isEqualTo(announcerId1);
 
 		String capturedEvent2 = kafkaTestListener.receiveContentFromTopic(TIMELINES_UPDATED)
 												 .orElseThrow(() -> new RuntimeException("No events"));
-		DomainEvent.Envelope<Announcement> event2 = objectMapper.readValue(capturedEvent2, new TypeReference<>() {
+		Envelope<Announcement> event2 = objectMapper.readValue(capturedEvent2, new TypeReference<>() {
 		});
 		assertThat(event2.getRecipients()).containsExactlyInAnyOrder(followerId1, followerId2);
 		assertThat(event2.getPayload().getAuthorId()).isEqualTo(announcerId2);
